@@ -98,13 +98,13 @@ table {
     });
   </script>
 <div class="sidenav">
-  <a id="all" style="font-size:30px;" onclick="location.href='contactList.php';">All</a>
+  <a style="font-size:25px;" onClick="location.href='home.php';">Me Tube</a>
   <br>
+  <a id="all" onclick="location.href='contactList.php';">All</a>
   <a id="friends" onclick="location.href='friends.php';">Friends</a>
   <a id="family" onclick="location.href='family.php';">Family</a>
   <a id="favorites" onclick="location.href='favorites.php';">Favorites</a>
   <a id="blocked" onclick="location.href='blocked.php';">Blocked</a>
-  <a onClick="location.href='home.php';">Me Tube</a>
 </div>
 
 
@@ -159,9 +159,9 @@ function get_contacts_blocked(){
                       "<td id='".$rowCount."3'><select id='group'>".
                               "<option value='None'>None</option>".
                               "<option value='Friends'>Friends</option>".
-                              "<option value='Family' selected>Family</option>".
+                              "<option value='Family'>Family</option>".
                               "<option value='Favorites'>Favorites</option>".
-                              "<option value='Blocked'>Blocked</option>".
+                              "<option value='Blocked' selected>Blocked</option>".
                           "</select>".
                       "</td>".
                       "<td id='".$rowCount."4'><button type='button' id='update_grp' data-row='".$rowCount."' class='btn btn-link' name='group'>Update Group</button>".

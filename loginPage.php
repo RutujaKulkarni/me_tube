@@ -1,3 +1,4 @@
+
 <?php
   include_once 'connmysql.php';
   connect_db();
@@ -64,10 +65,6 @@
       </div>
       <button type="submit" class="btn btn-primary" name="loginButton">Log in</button>
       <button type="button" class="btn btn-primary" name="home" onclick="location.href='home.php';">Home</button>
-      <BR>
-      <div class="form-group">
-        <a href="forgotPassword.php">Forgot Password</a>
-      </div>
     </form>
   </div>
 </body>

@@ -48,8 +48,8 @@ if (isset($_GET['Message'])) {
         <label for="Nature">Nature</label>
         <input type="radio" id="Music" name="category" value="Music">
         <label for="Music">Music</label>
-        <input type="radio" id="Music" name="category" value="Animal">
-        <label for="Music">Animals</label><br>
+        <input type="radio" id="Animal" name="category" value="Animal">
+        <label for="Animal">Animals</label><br>
     </div>
    <br>
    <div style="margin-left: 25%;">

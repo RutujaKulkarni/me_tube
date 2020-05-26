@@ -1,6 +1,7 @@
 <?php
   include_once 'connmysql.php';
   connect_db();
+  session_start();
 ?>
 
 <html lang = "en">
@@ -19,13 +20,20 @@
           $insertSql = "INSERT INTO USER_ACCOUNT (first_name, last_name, email_id, password, gender, dob, channel) VALUES ('" .$_POST['firstName']. "','" .$_POST['lastName']. "','" .$_POST['email']. "','" .sha1($_POST['pwd']). "','" .$_POST['gender']."','" .$_POST['dob']. "','" .$_POST['firstName']. "')";
 
           if (mysqli_query($mysqli, $insertSql)) {
+              
+              $useridSql = "SELECT user_id, channel FROM USER_ACCOUNT WHERE email_id = '" .$_POST['email'] ."'";
+              $resultSql = mysqli_query($mysqli, $useridSql);
+              $row = mysqli_fetch_assoc($resultSql);
+
               echo '<script>alert("New account created successfully")</script>';
-              header("Location:loginPage.php"); //not routing to loginpage
+              echo '<script>location.href="loginPage.php"</script>';
+
           } else {
               echo '<script>alert("Error occured while creating your account. Please make sure to use a unique username. ' .$mysqli->error .'")</script>';
           }
         }
       }
+
       //close_db_connection();
    ?>
   <ul class="nav justify-content-center" style="display:flex; margin-left: 45%;">
@@ -62,7 +70,7 @@
       </div>
       <div class="form-group">
         <label for="gender">Gender</label><br>
-        <input type="radio" id="male" name="gender" value="M">
+        <input type="radio" id="male" name="gender" value="M" required>
         <label for="male">Male</label><br>
         <input type="radio" id="female" name="gender" value="F">
         <label for="female">Female</label><br>

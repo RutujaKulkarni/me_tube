@@ -3,5 +3,5 @@
     session_destroy();
     unset($_SESSION);
     session_regenerate_id(true);
-    header('LOCATION: loginPage.php');
+    header('LOCATION: home.php');
 ?>

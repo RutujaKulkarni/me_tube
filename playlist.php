@@ -2,13 +2,17 @@
 <title>Me Tube</title>
 <head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="toastify.js"></script>
 	<link rel="stylesheet" type="text/css" href="MeTubeStyle.css" />
+	<link rel="stylesheet" type="text/css" href="toastify.css" />
 	<script src="https://code.jquery.com/jquery-3.5.0.js" integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc=" crossorigin="anonymous"></script>
+
 	<?php
 		ob_start();
 		session_start();
 		include_once 'connmysql.php';
 		connect_db();
+
 		$getmedia = "SELECT * FROM VIDEO_LIST WHERE video_id IN
 			(SELECT video_id from PLAY_LIST WHERE user_id = '" .$_SESSION['userid']."')";
 		$mediaTable = mysqli_query($mysqli, $getmedia);
@@ -23,6 +27,7 @@
 				$data_item['uploaded_date'] = $row["uploaded_date"];
 				$data_item['media_id'] = $row["video_id"];
 				$media_details[] = $data_item;
+
 				// storing physical media paths
 				if ($data_item['media_type'] == 'video'){
 					$media_paths[] = 'uploads/'.$data_item['user_id'].'/'.$data_item['media_type'].'/'.$data_item['file_name'].'#t=0.5';
@@ -40,19 +45,24 @@
 <body>
 	<script type="text/javascript" language="javascript">
 		$(document).ready(function(){
-			$('#remove_playlist').click(function(){
-				//alert('inside onclick');
-				//add_fav
+			//"input[name*='man']"
+			//$( "input[id][name$='man']" )
+
+			$('button[id*="remove_playlist"]').click(function(){
 				var media_id = $(this).data('mediaid');
-				var myData = {"media_id" : media_id};
+				var myData = {"media_id" : media_id, "type" : "playlist"};
 				var request = $.ajax({ //call settimeout here
 					url: "updatePlaylist.php",
 					type: "post",
 					data: myData
 				});
 				request.done(function (response, textStatus, jqXHR){
-						console.log("Removed from playlist!");
-						location.reload();
+					var myToast = Toastify({
+							 text: "Media removed from playlist successfully",
+							 duration: 5000
+					});
+					myToast.showToast();
+					location.reload();
 				});
 				request.fail(function (jqXHR, textStatus, errorThrown){
 						console.error(
@@ -62,10 +72,7 @@
 				});
 			});
 
-			$('#add_fav').click(function(){
-				//On click handler of add to Favorite
-				//add_fav
-
+			$('button[id*="add_fav"]').click(function(){
 				var media_id = $(this).data('mediaid');
 				var myData = {"media_id" : media_id};
 				var request = $.ajax({ //call settimeout here
@@ -74,8 +81,12 @@
 					data: myData
 				});
 				request.done(function (response, textStatus, jqXHR){
-						console.log("Added to Favorites!");
-						//location.reload();
+					var myToast = Toastify({
+							 text: "Media added to favorites successfully",
+							 duration: 5000
+					});
+					myToast.showToast();
+					//location.reload();
 				});
 				request.fail(function (jqXHR, textStatus, errorThrown){
 						console.error(
@@ -86,6 +97,7 @@
 			});
 		});
 	</script>
+
 	<div class="container-fluid" style="margin-top:1%;" >
 		<div class="col-sm-2">
 			<div style="display: grid;">
@@ -95,25 +107,21 @@
 
 					if(isset($_SESSION['username'])){
 						echo '<button type="button" class="btn btn-link" onClick="location.href=\'contactList.php\'">Contacts</button>'.
-						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'editProfile.php\'">Profile</button>'.
-						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'update_profile.php\'">AProfile</button>'.
+						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'update_profile.php\'">Profile</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'media_upload.php\'">Upload</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'chats.php\'">Chat</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'myChannel.php\'">My Channel</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'playlist.php\'">My Playlist</button>';
 					}
 					else{
-
 						echo '<button type="button" class="btn btn-link" onClick="location.href=\'loginPage.php\'">Contacts</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'loginPage.php\'">Profile</button>'.
-						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'loginPage.php\'">AProfile</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'loginPage.php\'">Upload</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'loginPage.php\'">Chat</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'loginPage.php\'">My Channel</button>'.
 						'<button type="button" name="button" class="btn btn-link" onClick="location.href=\'loginPage.php\'">My Playlist</button>';
 					}
 				?>
-
 			</div>
 		</div>
 
@@ -132,6 +140,7 @@
 			<br>
 
 			<!-- For removing from playlist, we need media ID ['media_id'] , user id (from session) -->
+
 				<!-- starting cards -->
 			<?php
 
@@ -143,6 +152,7 @@
 					$m_type = $media_details[$x]['media_type'];
 					$m_format = substr(strrchr($media_details[$x]['file_name'], '.'), 1 );
 					$m_id = $media_details[$x]['media_id'];
+
 					if ($m_type == 'video'){
 
 						$href_url = "play_video.php?url=".urlencode($m_url);
@@ -161,8 +171,9 @@
 											"</div>".
 											"</a>".
 										"</div>".
-									"<p style='margin-top: 10px; text-align: center;'><button type='button' data-mediaid='".$m_id."' id='remove_playlist' name='re_play' class='btn btn-link'>Remove from Playlist</button>".
-										"<button type='button' data-mediaid='".$m_id."' id='add_fav' name='add_fav' class='btn btn-link'>Add to Favorites</button>".
+
+									"<p style='margin-top: 10px; text-align: center;'><button type='button' data-mediaid='".$m_id."' id='remove_playlist".$m_id."' name='re_play' class='btn btn-link'>Remove from Playlist</button>".
+										"<button type='button' data-mediaid='".$m_id."' id='add_fav".$m_id."' name='add_fav' class='btn btn-link'>Add to Favorites</button>".
 									"</p>".
 								"</div>";
 
@@ -182,8 +193,10 @@
 											"</div>".
 											"</a>".
 										"</div>".
-									"<p style='margin-top: 10px; text-align: center;'><button type='button' data-mediaid='".$m_id."' id='remove_playlist' name='re_play' class='btn btn-link'>Remove from Playlist</button>".
-										"<button type='button' data-mediaid='".$m_id."' id='add_fav' name='add_fav' class='btn btn-link'>Add to Favorites</button>".
+
+									"<p style='margin-top: 10px; text-align: center;'><button type='button' data-mediaid='".$m_id."' id='remove_playlist".$m_id."' name='re_play' class='btn btn-link'>Remove from Playlist</button>".
+										"<button type='button' data-mediaid='".$m_id."' id='add_fav".$m_id."' name='add_fav' class='btn btn-link'>Add to Favorites</button>".
+
 									"</p>".
 								"</div>";
 					}
@@ -205,8 +218,10 @@
 											"</div>".
 											"</a>".
 										"</div>".
-									"<p style='margin-top: 10px; text-align: center;'><button type='button' data-mediaid='".$m_id."' id='remove_playlist' name='re_play' class='btn btn-link'>Remove from Playlist</button>".
-										"<button type='button' data-mediaid='".$m_id."' id='add_fav' name='add_fav' class='btn btn-link'>Add to Favorites</button>".
+
+									"<p style='margin-top: 10px; text-align: center;'><button type='button' data-mediaid='".$m_id."' id='remove_playlist".$m_id."' name='re_play' class='btn btn-link'>Remove from Playlist</button>".
+										"<button type='button' data-mediaid='".$m_id."' id='add_fav".$m_id."' name='add_fav' class='btn btn-link'>Add to Favorites</button>".
+
 									"</p>".
 								"</div>";
 					}
